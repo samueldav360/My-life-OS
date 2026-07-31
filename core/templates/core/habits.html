@@ -1,0 +1,215 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto">
+
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-white tracking-tight">Hábitos</h1>
+            <p class="text-gray-500 text-sm mt-1">{{ today|date:"d \d\e F Y" }} • {{ habits|length }} activos</p>
+        </div>
+        <button onclick="document.getElementById('addHabitModal').classList.toggle('hidden')" class="bg-blue-500 hover:bg-blue-600 text-white font-medium px-5 py-2.5 rounded-xl transition">
+            + Nuevo Hábito
+        </button>
+    </div>
+
+    <div class="space-y-3 mb-10">
+        {% for habit in habits %}
+        
+        <div class="bg-[#111318] border border-gray-800 rounded-xl p-4 hover:border-gray-700 transition group">
+            <div class="flex items-center justify-between">
+                
+                <div class="flex items-center gap-4 flex-1">
+                    <button 
+                        onclick="toggleHabit({{ habit.id }}, this)"
+                        class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors duration-200 cursor-pointer shrink-0
+                        {% if habit.today_completed %} border-green-500 bg-green-500 {% else %} border-gray-600 hover:border-gray-400 {% endif %}">
+                        <svg class="w-3.5 h-3.5 text-[#111318] {% if not habit.today_completed %} hidden {% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </button>
+                    
+                    <div>
+                        <span class="text-gray-200 font-medium transition {% if habit.today_completed %} line-through text-gray-500 {% endif %}">
+                            {{ habit.name }}
+                        </span>
+                        {% if habit.category %}
+                        <span class="ml-3 text-xs px-2 py-0.5 rounded-full" style="background-color: {{ habit.category.color }}20; color: {{ habit.category.color }};">
+                            {{ habit.category.name }}
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-5">
+                    
+                    <div class="text-right hidden sm:block">
+                        <p class="text-xs text-gray-600">Racha</p>
+                        <p class="text-sm font-bold {% if habit.streak > 0 %}text-orange-400{% else %}text-gray-600{% endif %}">
+                            {% if habit.streak > 0 %} {{ habit.streak }} días{% else %}--{% endif %}
+                        </p>
+                    </div>
+
+                    <button 
+                        onclick="deleteHabit({{ habit.id }})" 
+                        class="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-red-500 transition cursor-pointer p-1">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.955-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        {% empty %}
+        <div class="text-center py-20 bg-[#111318] rounded-xl border border-gray-800">
+            <p class="text-gray-400 text-lg">Empieza construyendo un hábito.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="bg-[#111318] border border-gray-800 rounded-xl p-6 mb-6">
+        <div class="flex items-center justify-between mb-5">
+            <h3 class="text-white font-semibold">Constancia (Últimos 120 días)</h3>
+            <div class="flex items-center gap-2 text-[10px] text-gray-500">
+                <span>Menos</span>
+                <div class="w-3 h-3 rounded-sm bg-gray-800/50"></div>
+                <div class="w-3 h-3 rounded-sm bg-green-900/70"></div>
+                <div class="w-3 h-3 rounded-sm bg-green-700/70"></div>
+                <div class="w-3 h-3 rounded-sm bg-green-500/80"></div>
+                <div class="w-3 h-3 rounded-sm bg-green-400"></div>
+                <span>Más</span>
+            </div>
+        </div>
+
+        <div class="grid grid-flow-col gap-[3px]" style="grid-template-rows: repeat(7, 1fr); grid-auto-columns: 1fr;">
+            {% for day in heatmap_data %}
+                <div 
+                    class="w-full aspect-square rounded-sm transition-colors"
+                    style="background-color: 
+                        {% if day.pct == 0 %} #1a1d24 
+                        {% elif day.pct <= 25 %} #064e3b 
+                        {% elif day.pct <= 50 %} #047857 
+                        {% elif day.pct <= 99 %} #16a34a 
+                        {% else %} #4ade80 {% endif %};"
+                    title="{{ day.date|date:'d \d\e M Y' }} - {{ day.pct }}% completado">
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div id="addHabitModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+        <div class="bg-[#111318] border border-gray-800 rounded-xl p-8 w-full max-w-md mx-4">
+            <h2 class="text-xl font-bold text-white mb-6">Nuevo Hábito</h2>
+            <form action="{% url 'add_habit' %}" method="POST" class="space-y-4">
+                {% csrf_token %}
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">¿Qué hábito quieres crear?</label>
+                    <input type="text" name="name" required class="w-full bg-[#0a0a0a] border border-gray-800 rounded-lg px-4 py-3 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition" placeholder="Ej: Beber 2L de agua">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">Categoría (Opcional)</label>
+                    <select name="category" class="w-full bg-[#0a0a0a] border border-gray-800 rounded-lg px-4 py-3 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition">
+                        <option value="">Sin categoría</option>
+                        {% for cat in categories %}
+                        <option value="{{ cat.id }}">{{ cat.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="flex gap-3 pt-2">
+                    <button type="button" onclick="document.getElementById('addHabitModal').classList.toggle('hidden')" class="flex-1 bg-gray-800 hover:bg-gray-700 text-white font-medium py-3 rounded-xl transition">Cancelar</button>
+                    <button type="submit" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 rounded-xl transition">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function getCookie(name) { let c=null; if(document.cookie&&document.cookie!==''){const cs=document.cookie.split(';'); for(let i=0;i<cs.length;i++){const c2=cs[i].trim(); if(c2.substring(0,name.length+1)===(name+'=')){c=decodeURIComponent(c2.substring(name.length+1));break;}}} return c; }
+
+    function toggleHabit(habitId, btnElement) {
+        const isCompleted = !btnElement.classList.contains('bg-green-500');
+        
+        try {
+            const icon = btnElement.querySelector('svg');
+            const textSpan = btnElement.closest('.flex.items-center').querySelector('span'); 
+            
+            if (isCompleted) {
+                btnElement.classList.add('border-green-500', 'bg-green-500'); 
+                btnElement.classList.remove('border-gray-600', 'hover:border-gray-400');
+                if(icon) icon.classList.remove('hidden'); 
+                if(textSpan) {
+                    textSpan.classList.add('line-through', 'text-gray-500'); 
+                    textSpan.classList.remove('text-gray-200');
+                }
+            } else {
+                btnElement.classList.remove('border-green-500', 'bg-green-500'); 
+                btnElement.classList.add('border-gray-600', 'hover:border-gray-400');
+                if(icon) icon.classList.add('hidden'); 
+                if(textSpan) {
+                    textSpan.classList.remove('line-through', 'text-gray-500'); 
+                    textSpan.classList.add('text-gray-200');
+                }
+            }
+        } catch (e) {
+            console.warn("Fallo visual menor, pero guardando datos de todos modos:", e);
+        }
+
+        const csrfInput = document.querySelector('[name=csrfmiddlewaretoken]');
+        const csrftoken = csrfInput ? csrfInput.value : getCookie('csrftoken');
+
+        fetch("{% url 'toggle_habit' %}", {
+            method: "POST", 
+            headers: { 
+                "Content-Type": "application/json", 
+                "X-CSRFToken": csrftoken 
+            },
+            body: JSON.stringify({ habit_id: habitId, is_completed: isCompleted })
+        })
+        .then(response => {
+            if (!response.ok) {
+                console.error("Django devolvió un error HTTP:", response.status);
+            }
+            return response.json();
+        })
+        .then(data => { 
+            if(data.status === 'success') { 
+                setTimeout(() => window.location.reload(), 100); 
+            } else {
+                console.error("Error en servidor:", data.message);
+            }
+        })
+        .catch(error => {
+            console.error("El Fetch fue bloqueado o falló la conexión:", error);
+        });
+    }
+
+    function deleteHabit(habitId) {
+        if (confirm("¿Seguro que quieres eliminar este hábito y todo su historial?")) {
+            const csrfInput = document.querySelector('[name=csrfmiddlewaretoken]');
+            const csrftoken = csrfInput ? csrfInput.value : getCookie('csrftoken');
+            fetch(`/habitos/eliminar/${habitId}/`, {
+                method: "POST", 
+                headers: { 
+                    "X-CSRFToken": csrftoken,
+                    "Content-Type": "application/json"
+                }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Error HTTP: ' + response.status);
+                return response.json();
+            })
+            .then(data => { 
+                if (data.status === 'success') { 
+                    window.location.reload(); 
+                } else {
+                    alert("El servidor rechazó eliminarlo: " + data.message);
+                }
+            })
+            .catch(error => {
+                console.error("Error al eliminar:", error);
+                alert("Fallo al contactar al servidor. Revisa tu terminal de Django.");
+            });
+        }
+    }
+</script>
+
+{% endblock content %}

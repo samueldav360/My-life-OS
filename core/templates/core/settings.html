@@ -1,0 +1,98 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    
+    <h1 class="text-2xl font-bold text-white mb-8">Configuración</h1>
+
+    <div class="bg-[#111318] border border-gray-800 rounded-xl p-6 mb-6">
+        <h2 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">Perfil</h2>
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-xl font-bold">
+                {{ request.user.username.0|upper }}
+            </div>
+            <div>
+                <p class="text-white font-medium">{{ request.user.username }}</p>
+                <p class="text-gray-500 text-sm">Cuenta local</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-[#111318] border border-gray-800 rounded-xl p-6 mb-6">
+        <h2 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">Apariencia</h2>
+        <form action="{% url 'save_settings' %}" method="POST" class="space-y-4">
+            {% csrf_token %}
+            <div>
+                <label class="block text-sm text-gray-300 mb-2">Color principal</label>
+                <div class="flex gap-3">
+                    <label class="cursor-pointer">
+                        <input type="radio" name="accent_color" value="#3B82F6" class="hidden peer" {% if settings.accent_color == '#3B82F6' %}checked{% endif %}>
+                        <div class="w-10 h-10 bg-blue-500 rounded-lg peer-checked:ring-2 ring-white ring-offset-2 ring-offset-[#111318] transition"></div>
+                    </label>
+                    <label class="cursor-pointer">
+                        <input type="radio" name="accent_color" value="#8B5CF6" class="hidden peer" {% if settings.accent_color == '#8B5CF6' %}checked{% endif %}>
+                        <div class="w-10 h-10 bg-purple-500 rounded-lg peer-checked:ring-2 ring-white ring-offset-2 ring-offset-[#111318] transition"></div>
+                    </label>
+                    <label class="cursor-pointer">
+                        <input type="radio" name="accent_color" value="#10B981" class="hidden peer" {% if settings.accent_color == '#10B981' %}checked{% endif %}>
+                        <div class="w-10 h-10 bg-green-500 rounded-lg peer-checked:ring-2 ring-white ring-offset-2 ring-offset-[#111318] transition"></div>
+                    </label>
+                    <label class="cursor-pointer">
+                        <input type="radio" name="accent_color" value="#F59E0B" class="hidden peer" {% if settings.accent_color == '#F59E0B' %}checked{% endif %}>
+                        <div class="w-10 h-10 bg-yellow-500 rounded-lg peer-checked:ring-2 ring-white ring-offset-2 ring-offset-[#111318] transition"></div>
+                    </label>
+                </div>
+            </div>
+            <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold px-6 py-2.5 rounded-lg transition">
+                Guardar Apariencia
+            </button>
+        </form>
+    </div>
+
+    <div class="bg-[#111318] border border-gray-800 rounded-xl p-6 mb-6">
+        <h2 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">Datos y Copias de Seguridad</h2>
+        <p class="text-gray-500 text-sm mb-4">Descarga todos tus hábitos, objetivos y diario en un archivo seguro (JSON).</p>
+        <a href="{% url 'export_data' %}" class="inline-flex items-center gap-2 bg-gray-800 hover:bg-gray-700 text-white font-medium px-5 py-2.5 rounded-lg transition text-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            Exportar Mi Vida (.json)
+        </a>
+    </div>
+
+    <div class="bg-[#111318] border border-red-900/50 rounded-xl p-6">
+        <h2 class="text-sm font-bold text-red-400 uppercase tracking-wider mb-4">Zona de Peligro</h2>
+        <p class="text-gray-500 text-sm mb-4">Estas acciones no se pueden deshacer. Se eliminarán los datos permanentemente.</p>
+        
+        <div class="grid grid-cols-2 gap-3">
+            <form action="{% url 'clear_data' %}" method="POST" onsubmit="return confirm('¿Borrar todos los hábitos y su historial?')">
+                {% csrf_token %}
+                <input type="hidden" name="data_type" value="habits">
+                <button type="submit" class="w-full border border-red-800/50 text-red-400 hover:bg-red-900/20 text-sm font-medium py-2.5 rounded-lg transition">
+                    Borrar Hábitos
+                </button>
+            </form>
+            <form action="{% url 'clear_data' %}" method="POST" onsubmit="return confirm('¿Borrar todos los eventos de la agenda?')">
+                {% csrf_token %}
+                <input type="hidden" name="data_type" value="events">
+                <button type="submit" class="w-full border border-red-800/50 text-red-400 hover:bg-red-900/20 text-sm font-medium py-2.5 rounded-lg transition">
+                    Borrar Agenda
+                </button>
+            </form>
+            <form action="{% url 'clear_data' %}" method="POST" onsubmit="return confirm('¿Borrar todos los objetivos?')">
+                {% csrf_token %}
+                <input type="hidden" name="data_type" value="goals">
+                <button type="submit" class="w-full border border-red-800/50 text-red-400 hover:bg-red-900/20 text-sm font-medium py-2.5 rounded-lg transition">
+                    Borrar Objetivos
+                </button>
+            </form>
+            <form action="{% url 'clear_data' %}" method="POST" onsubmit="return confirm('¿Borrar todo el diario?')">
+                {% csrf_token %}
+                <input type="hidden" name="data_type" value="journal">
+                <button type="submit" class="w-full border border-red-800/50 text-red-400 hover:bg-red-900/20 text-sm font-medium py-2.5 rounded-lg transition">
+                    Borrar Diario
+                </button>
+            </form>
+        </div>
+    </div>
+
+</div>
+{% endblock content %}

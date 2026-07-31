@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - My life OS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#0a0a0a] text-white min-h-screen flex items-center justify-center font-sans">
+    
+    <div class="w-full max-w-md px-4">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold tracking-wider">My life OS</h1>
+            <p class="text-gray-500 text-sm mt-2">Ingresa a tu sistema operativo personal</p>
+        </div>
+
+        <div class="bg-[#111318] border border-gray-800 rounded-xl p-8">
+            <form method="POST" action="{% url 'login' %}" class="space-y-5">
+                {% csrf_token %}
+                
+                {% if form.errors %}
+                <div class="bg-red-500/10 border border-red-500/30 text-red-400 text-sm rounded-lg p-3">
+                    Usuario o contraseña incorrectos.
+                </div>
+                {% endif %}
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1.5">Usuario</label>
+                    <input type="text" name="username" required autofocus
+                    class="w-full bg-[#0a0a0a] border border-gray-800 text-white rounded-lg px-4 py-3 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition" 
+                    placeholder="tu_usuario">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1.5">Contraseña</label>
+                    <input type="password" name="password" required
+                    class="w-full bg-[#0a0a0a] border border-gray-800 text-white rounded-lg px-4 py-3 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition" 
+                    placeholder="••••••••">
+                </div>
+
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg transition duration-200">
+                    Iniciar Sesión
+                </button>
+            </form>
+        </div>
+
+        <p class="text-center text-gray-500 text-sm mt-6">
+            ¿No tienes cuenta? 
+            <a href="{% url 'register' %}" class="text-blue-400 hover:text-blue-300 font-medium transition">Regístrate aquí</a>
+        </p>
+    </div>
+
+</body>
+</html>

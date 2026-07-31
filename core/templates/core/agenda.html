@@ -1,0 +1,79 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    
+    <div class="flex items-center justify-between mb-8">
+        <h1 class="text-2xl font-bold text-white">Plantillas de Agenda</h1>
+    </div>
+
+    <form action="{% url 'create_template' %}" method="POST" class="flex gap-3 mb-8">
+        {% csrf_token %}
+        <input type="text" name="name" required placeholder="Nombre de la plantilla (Ej: Día entre semana, Sábados...)" 
+               class="flex-1 bg-[#111318] border border-gray-800 text-white text-sm rounded-xl px-4 py-3 focus:border-blue-500 outline-none transition">
+        <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-6 py-3 rounded-xl transition">
+            + Crear
+        </button>
+    </form>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {% for template in templates %}
+        <div class="bg-[#111318] border border-gray-800 rounded-xl p-6 hover:border-gray-700 transition group">
+            <div class="flex items-start justify-between mb-4">
+                <h3 class="text-lg font-semibold text-white group-hover:text-blue-400 transition">{{ template.name }}</h3>
+                <span class="text-xs text-gray-600 bg-gray-800/50 px-2 py-0.5 rounded">{{ template.blocks.count }} bloques</span>
+            </div>
+            
+            <p class="text-gray-500 text-sm mb-5">
+                {% if template.blocks.first %}Empieza a las {{ template.blocks.first.start_time|time:"H:i" }}{% else %}Sin bloques aún{% endif %}
+            </p>
+
+            <div class="flex gap-2">
+                <a href="{% url 'template_detail' template.id %}" class="flex-1 text-center bg-gray-800/50 hover:bg-gray-700 text-white text-sm font-medium py-2.5 rounded-lg transition">
+                    Editar
+                </a>
+                <form action="{% url 'apply_template' template.id %}" method="POST" class="flex-1">
+                    {% csrf_token %}
+                    <button type="submit" class="w-full bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 text-sm font-bold py-2.5 rounded-lg transition">
+                        Usar Hoy
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        {% empty %}
+        <div class="col-span-2 text-center py-20 bg-[#111318] rounded-xl border border-gray-800">
+            <p class="text-gray-400 text-lg">Crea tu primera plantilla.</p>
+            <p class="text-gray-600 text-sm mt-1">Podrás reutilizarla cuantas veces quieras.</p>
+        </div>
+        {% endfor %}
+    </div>
+        <div class="bg-[#111318] border border-gray-800 rounded-xl p-6 mb-8">
+        <div class="flex justify-between items-center mb-5">
+            <p class="text-sm text-gray-500 font-mono">{{ today|date:"d \d\e F" }}</p>
+        </div>
+
+        {% if today_events %}
+        <div class="relative pl-6 border-l border-gray-800 space-y-4">
+            {% for event in today_events %}
+            <div class="relative group">
+                <div class="absolute -left-[25px] top-1.5 w-2.5 h-2.5 bg-blue-500 rounded-full border-4 border-[#111318]"></div>
+                <div class="bg-gray-800/20 border border-gray-700/30 rounded-xl p-4 hover:border-gray-600 transition">
+                    <div class="flex justify-between items-center">
+                        <h4 class="text-white font-medium">{{ event.title }}</h4>
+                        <span class="text-xs font-mono text-gray-500 bg-gray-800/50 px-2 py-0.5 rounded">{{ event.start_time|time:"H:i" }} - {{ event.end_time|time:"H:i" }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-8">
+            <p class="text-gray-500 text-sm">No tienes actividades para hoy.</p>
+            <p class="text-gray-600 text-xs mt-1">Ve a una plantilla y dale a "Usar Hoy" para llenar tu día.</p>
+        </div>
+        {% endif %}
+    </div>  
+
+</div>
+{% endblock content %}

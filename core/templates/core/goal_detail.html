@@ -1,0 +1,48 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+
+    <a href="{% url 'goals' %}" class="inline-flex items-center gap-2 text-gray-400 hover:text-white transition text-sm mb-6">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+        Volver a Objetivos
+    </a>
+
+    <div class="bg-[#111318] border border-gray-800 rounded-xl p-8 mb-6">
+        <h1 class="text-3xl font-bold text-white mb-2">{{ goal.name }}</h1>
+        <p class="text-gray-400 mb-6 leading-relaxed">{{ goal.description|default:"Sin descripción proporcionada." }}</p>
+        
+        <div class="flex items-center gap-4">
+            <div class="flex-1 h-3 bg-gray-800 rounded-full overflow-hidden">
+                <div class="h-full bg-blue-500 rounded-full transition-all duration-700" style="width: {{ goal.progress }}%;"></div>
+            </div>
+            <span class="text-blue-400 font-bold text-2xl min-w-[60px] text-right">{{ goal.progress }}%</span>
+        </div>
+        {% if goal.deadline %}
+            <p class="text-sm text-gray-500 mt-4">Fecha límite: {{ goal.deadline|date:"d \d\e F, Y" }}</p>
+        {% endif %}
+    </div>
+
+    <div class="bg-[#111318] border border-gray-800 rounded-xl p-6">
+        <h2 class="text-xl font-semibold text-white mb-5">Hitos y Tareas</h2>
+        
+        <form action="{% url 'add_milestone' goal.id %}" method="POST" class="flex gap-3 mb-6">
+            {% csrf_token %}
+            <input type="text" name="title" required class="flex-1 bg-[#0a0a0a] border border-gray-800 rounded-lg px-4 py-2.5 text-white text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition" placeholder="Añadir nuevo hito...">
+            <button type="submit" class="bg-gray-800 hover:bg-gray-700 text-white font-medium px-5 py-2.5 rounded-lg transition text-sm">Añadir</button>
+        </form>
+
+        <div class="space-y-3">
+            {% for milestone in milestones %}
+            <div class="flex items-center gap-4 p-3 rounded-lg hover:bg-[#0a0a0a]/50 transition group">
+                <input type="checkbox" class="w-5 h-5 rounded bg-gray-800 border-gray-600 text-blue-500 focus:ring-blue-500 cursor-pointer" {% if milestone.is_completed %}checked{% endif %}>
+                <span class="flex-1 text-gray-300 {% if milestone.is_completed %}line-through text-gray-600{% endif %}">{{ milestone.title }}</span>
+            </div>
+            {% empty %}
+            <p class="text-gray-600 text-sm text-center py-4">No hay hitos. Añade el primero arriba.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+{% endblock content %}

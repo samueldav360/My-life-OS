@@ -1,0 +1,65 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    
+    <div class="flex items-center justify-between mb-8">
+        <h1 class="text-3xl font-bold text-white tracking-tight">Objetivos</h1>
+        <button onclick="document.getElementById('addGoalModal').classList.toggle('hidden')" class="bg-blue-500 hover:bg-blue-600 text-white font-medium px-5 py-2.5 rounded-xl transition">
+            + Nuevo
+        </button>
+    </div>
+
+    <div class="space-y-4">
+        {% for goal in goals %}
+        <a href="{% url 'goal_detail' goal.id %}" class="block bg-[#111318] border border-gray-800 rounded-xl p-6 hover:border-gray-700 transition group cursor-pointer">
+            
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xl font-semibold text-white group-hover:text-blue-400 transition">{{ goal.name }}</h3>
+                <span class="text-blue-400 font-bold text-lg">{{ goal.progress }}%</span>
+            </div>
+            
+            <div class="w-full h-2.5 bg-gray-800 rounded-full overflow-hidden">
+                <div class="h-full bg-blue-500 rounded-full transition-all duration-500 ease-out" style="width: {{ goal.progress }}%;"></div>
+            </div>
+
+            {% if goal.deadline %}
+            <p class="text-sm text-gray-500 mt-3">Fecha límite: {{ goal.deadline|date:"d \d\e M, Y" }}</p>
+            {% endif %}
+
+        </a>
+        {% empty %}
+        <div class="text-center py-20 bg-[#111318] rounded-xl border border-gray-800">
+            <p class="text-gray-400 text-lg">No tienes objetivos aún.</p>
+            <p class="text-gray-600 text-sm mt-1">Crea uno para empezar a trackear tu progreso.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div id="addGoalModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+        <div class="bg-[#111318] border border-gray-800 rounded-xl p-8 w-full max-w-md mx-4">
+            <h2 class="text-xl font-bold text-white mb-6">Nuevo Objetivo</h2>
+            <form action="{% url 'add_goal' %}" method="POST" class="space-y-4">
+                {% csrf_token %}
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">Nombre</label>
+                    <input type="text" name="name" required class="w-full bg-[#0a0a0a] border border-gray-800 rounded-lg px-4 py-3 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition" placeholder="Ej: ICFES, Macondo...">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">Descripción</label>
+                    <textarea name="description" rows="3" class="w-full bg-[#0a0a0a] border border-gray-800 rounded-lg px-4 py-3 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition" placeholder="¿De qué trata este objetivo?"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">Fecha límite (Opcional)</label>
+                    <input type="date" name="deadline" class="w-full bg-[#0a0a0a] border border-gray-800 rounded-lg px-4 py-3 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition">
+                </div>
+                <div class="flex gap-3 pt-2">
+                    <button type="button" onclick="document.getElementById('addGoalModal').classList.toggle('hidden')" class="flex-1 bg-gray-800 hover:bg-gray-700 text-white font-medium py-3 rounded-xl transition">Cancelar</button>
+                    <button type="submit" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 rounded-xl transition">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+{% endblock content %}

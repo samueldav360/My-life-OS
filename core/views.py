@@ -4,6 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.db.models import Count
 from django.http import JsonResponse
+from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponse
 import json
 from datetime import date, datetime, timedelta

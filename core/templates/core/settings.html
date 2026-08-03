@@ -19,37 +19,6 @@
     </div>
 
     <div class="bg-[#111318] border border-gray-800 rounded-xl p-6 mb-6">
-        <h2 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">Apariencia</h2>
-        <form action="{% url 'save_settings' %}" method="POST" class="space-y-4">
-            {% csrf_token %}
-            <div>
-                <label class="block text-sm text-gray-300 mb-2">Color principal</label>
-                <div class="flex gap-3">
-                    <label class="cursor-pointer">
-                        <input type="radio" name="accent_color" value="#3B82F6" class="hidden peer" {% if settings.accent_color == '#3B82F6' %}checked{% endif %}>
-                        <div class="w-10 h-10 bg-blue-500 rounded-lg peer-checked:ring-2 ring-white ring-offset-2 ring-offset-[#111318] transition"></div>
-                    </label>
-                    <label class="cursor-pointer">
-                        <input type="radio" name="accent_color" value="#8B5CF6" class="hidden peer" {% if settings.accent_color == '#8B5CF6' %}checked{% endif %}>
-                        <div class="w-10 h-10 bg-purple-500 rounded-lg peer-checked:ring-2 ring-white ring-offset-2 ring-offset-[#111318] transition"></div>
-                    </label>
-                    <label class="cursor-pointer">
-                        <input type="radio" name="accent_color" value="#10B981" class="hidden peer" {% if settings.accent_color == '#10B981' %}checked{% endif %}>
-                        <div class="w-10 h-10 bg-green-500 rounded-lg peer-checked:ring-2 ring-white ring-offset-2 ring-offset-[#111318] transition"></div>
-                    </label>
-                    <label class="cursor-pointer">
-                        <input type="radio" name="accent_color" value="#F59E0B" class="hidden peer" {% if settings.accent_color == '#F59E0B' %}checked{% endif %}>
-                        <div class="w-10 h-10 bg-yellow-500 rounded-lg peer-checked:ring-2 ring-white ring-offset-2 ring-offset-[#111318] transition"></div>
-                    </label>
-                </div>
-            </div>
-            <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold px-6 py-2.5 rounded-lg transition">
-                Guardar Apariencia
-            </button>
-        </form>
-    </div>
-
-    <div class="bg-[#111318] border border-gray-800 rounded-xl p-6 mb-6">
         <h2 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">Datos y Copias de Seguridad</h2>
         <p class="text-gray-500 text-sm mb-4">Descarga todos tus hábitos, objetivos y diario en un archivo seguro (JSON).</p>
         <a href="{% url 'export_data' %}" class="inline-flex items-center gap-2 bg-gray-800 hover:bg-gray-700 text-white font-medium px-5 py-2.5 rounded-lg transition text-sm">

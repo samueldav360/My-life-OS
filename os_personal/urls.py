@@ -28,7 +28,7 @@ urlpatterns = [
     path('objetivos/agregar/', views.add_goal, name='add_goal'),
     path('objetivos/<int:goal_id>/', views.goal_detail, name='goal_detail'),
     path('objetivos/<int:goal_id>/hito/agregar/', views.add_milestone, name='add_milestone'),
-    path('objetivos/<int:goal_id>/hito/toggle/', views.toggle_milestone, name='toggle_milestone'),
+    path('hito/<int:milestone_id>/toggle/', views.toggle_milestone, name='toggle_milestone'),
 
     path('diario/', views.journal_page, name='journal'),
     path('diario/guardar/', views.save_journal, name='save_journal'),

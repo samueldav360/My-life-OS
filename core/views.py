@@ -303,17 +303,23 @@ def add_milestone(request, goal_id):
     return redirect('goal_detail', goal_id=goal_id)
 
 @login_required
-def toggle_milestone(request):
+def toggle_milestone(request, milestone_id):
     if request.method == 'POST':
-        data = json.loads(request.body)
-        milestone_id = data.get('milestone_id')
-        is_completed = data.get('is_completed')
-        
-        milestone = get_object_or_404(Milestone, id=milestone_id, goal__user=request.user)
-        milestone.is_completed = is_completed
+        milestone = get_object_or_404(Milestone, id=milestone_id)
+        milestone.is_completed = not milestone.is_completed
         milestone.save()
-        return JsonResponse({'status': 'success'})
-    return JsonResponse({'status': 'error'}, status=400)
+
+        goal = milestone.goal
+        
+        total = goal.milestones.count() 
+        completados = goal.milestones.filter(is_completed=True).count()
+        if total > 0:
+            goal.progress = int((completados / total) * 100)
+        else:
+            goal.progress = 0
+            
+        goal.save()
+        return redirect('goal_detail', goal_id=goal.id)
 
 @login_required
 def journal_page(request):

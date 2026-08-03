@@ -361,7 +361,10 @@ def export_data(request):
         "journal": list(JournalEntry.objects.filter(user=request.user).values('date', 'reflection', 'went_well', 'to_improve'))
     }
     
-    response = HttpResponse(json.dumps(data, indent=4, ensure_ascii=False), content_type="application/json")
+    response = HttpResponse(
+        json.dumps(data, indent=4, ensure_ascii=False, cls=DjangoJSONEncoder), 
+        content_type="application/json"
+    )
     response['Content-Disposition'] = 'attachment; filename="mylifeos_backup.json"'
     return response
 

@@ -51,7 +51,7 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-400 mb-1">Fecha límite (Opcional)</label>
-                    <input type="date" name="deadline" class="w-full bg-[#0a0a0a] border border-gray-800 rounded-lg px-4 py-3 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition">
+                    <input type="date" name="deadline" min="2024-01-01" max="2100-12-31" class="w-full bg-[#0a0a0a] border border-gray-800 rounded-lg px-4 py-3 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition">
                 </div>
                 <div class="flex gap-3 pt-2">
                     <button type="button" onclick="document.getElementById('addGoalModal').classList.toggle('hidden')" class="flex-1 bg-gray-800 hover:bg-gray-700 text-white font-medium py-3 rounded-xl transition">Cancelar</button>
